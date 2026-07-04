@@ -1,11 +1,10 @@
-# Word lists — placeholder data
+# Word lists
 
-`words-5.json`, `words-6.json`, and `words-7.json` in this directory are **development placeholders** (~30-35 words each), not the real dataset.
+`words-5.json`, `words-6.json`, and `words-7.json` are the real word datasets (3,000 entries each), replacing the original development placeholders.
 
-Roy will supply the real ~2000-most-common-words-per-length files later. To swap them in:
+Schema:
+```json
+[{ "word": "APPLE", "definition": "A round fruit with red, green, or yellow skin." }]
+```
 
-1. Replace each file, keeping the exact same filename (`words-5.json`, `words-6.json`, `words-7.json`) and schema:
-   ```json
-   [{ "word": "APPLE", "definition": "A round fruit with red, green, or yellow skin." }]
-   ```
-2. No code changes are needed — the loader (`src/game/wordlist.js`) makes no assumptions about list size or specific words, only that every entry's `word` matches the file's expected length and has a non-empty `definition`.
+The loader (`src/game/wordlist.js`) makes no assumptions about list size - only that every entry's `word` matches the file's expected length and has a non-empty `definition`. So these files can be swapped again later (e.g. a bigger or curated list) with no code changes, as long as the filename and schema stay the same.
