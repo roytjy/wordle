@@ -18,5 +18,4 @@ A much larger, definition-free list of words that are accepted as valid *guesses
 
 A guess is accepted if it appears in *either* file — so this list only ever expands what's accepted, never removes anything already valid.
 
-- `words-6-dictionary.json` and `words-7-dictionary.json` currently just reuse the words from `words-6.json` / `words-7.json`.
-- **`words-5-dictionary.json` is still a placeholder** (~110 words) — swap in a real, comprehensive 5-letter dictionary later. Same filename, same flat-array schema, no code changes needed (`src/game/wordlist.js` makes no assumptions about size).
+All three (`words-5-dictionary.json`, `words-6-dictionary.json`, `words-7-dictionary.json`) are real comprehensive dictionaries now (4,667 / 20,089 / 30,074 words respectively) - no more placeholders.
