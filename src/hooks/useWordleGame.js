@@ -61,7 +61,8 @@ export function useWordleGame(difficulty) {
     const wordData = wordDataRef.current;
     if (!wordData || state.status !== 'playing') return;
     const guess = state.currentGuess;
-    if (guess.length !== state.answer.length || !wordData.wordSet.has(guess)) {
+    const isAcceptable = wordData.wordSet.has(guess) || wordData.dictionarySet.has(guess);
+    if (guess.length !== state.answer.length || !isAcceptable) {
       setShakeKey((k) => k + 1);
       return;
     }
