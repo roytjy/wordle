@@ -10,7 +10,7 @@ const cache = new Map();
 export function loadWordList(difficulty) {
   if (cache.has(difficulty)) return cache.get(difficulty);
 
-  const promise = fetch(`/words/words-${difficulty}.json`)
+  const promise = fetch(`${import.meta.env.BASE_URL}words/words-${difficulty}.json`)
     .then((res) => {
       if (!res.ok) throw new Error(`Word list HTTP ${res.status}`);
       return res.json();
