@@ -17,6 +17,12 @@
   color: var(--color-text-muted);
 }
 
+.word {
+  margin: 0;
+  text-align: center;
+  font-weight: 600;
+}
+
 .list {
   list-style: none;
   margin: 0;

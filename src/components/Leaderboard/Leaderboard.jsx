@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { fetchLeaderboard } from '../../firebase/leaderboard.js';
 import { normalizeUsername } from '../../game/username.js';
+import { loadWordList } from '../../game/wordlist.js';
+import { pickDailyWord } from '../../game/dailyWord.js';
 import styles from './Leaderboard.module.css';
 
 function formatTime(ms) {
@@ -13,11 +15,26 @@ function formatTime(ms) {
 
 export default function Leaderboard({ difficulty, dateString, highlightUsername }) {
   const [entries, setEntries] = useState(null);
+  const [word, setWord] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
     fetchLeaderboard(difficulty, dateString).then((results) => {
       if (!cancelled) setEntries(results);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [difficulty, dateString]);
+
+  useEffect(() => {
+    let cancelled = false;
+    // Anyone reaching this screen has already finished their attempt for
+    // this difficulty/day, so revealing the word here is safe - it's
+    // recomputed the same deterministic way Time Mode picked it, no
+    // network round trip needed.
+    loadWordList(difficulty).then((wordData) => {
+      if (!cancelled) setWord(pickDailyWord(wordData.words, dateString, difficulty));
     });
     return () => {
       cancelled = true;
@@ -36,6 +53,7 @@ export default function Leaderboard({ difficulty, dateString, highlightUsername 
       <h2 className={styles.heading}>
         {difficulty}-letter leaderboard — {dateString}
       </h2>
+      {word && <p className={styles.word}>Today's word: {word}</p>}
       {entries.length === 0 ? (
         <p className={styles.message}>No one has played yet today. Be the first!</p>
       ) : (
