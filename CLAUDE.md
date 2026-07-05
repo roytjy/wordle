@@ -13,19 +13,26 @@ A Wordle clone with hints, built as a client-side-only React web app. Full requi
 - Persistence is per-difficulty: up to 3 concurrent saved games in localStorage (keys `wordle:v1:save:{5,6,7}`), via the storage abstraction in `src/storage/` — never call `localStorage` directly from game/component code, go through `src/storage/storage.js` so persistence can be swapped later.
 - Difficulty is switchable at any time; switching just resumes (or starts fresh) that difficulty's own save.
 - `.venv` / `.python-version` at the repo root are reserved for possible future backend work — unrelated to this app, leave them alone.
+- **Time Mode**: a second, ranked mode toggled via `ModeToggle` alongside difficulty. Players claim a globally-unique username (Firestore-backed, remembered locally afterward), then race a deterministic word-of-the-day per difficulty (same for everyone, seeded from the Asia/Singapore calendar date — see `src/game/dailyWord.js`/`src/game/singaporeDate.js`), with no hints and a running timer. One attempt per difficulty per SGT day per username; a repeat visit that day goes straight to that day's leaderboard instead of a fresh board. Losses still reach the leaderboard, shown as "DNF" and excluded from ranking. See `firestore.rules` (repo root) for the data model/security rules, and the "Known limitations" section of the Time Mode plan for accepted trade-offs (no anti-cheat, no historical leaderboard, no username recovery). **Requires a one-time manual Firebase console setup** — see `src/firebase/config.js`, which ships with placeholder values until that's done.
 
 ## Tech stack
 
-React + Vite, plain JS/JSX (no TypeScript). CSS Modules per component, no CSS framework. Vitest for unit tests.
+React + Vite, plain JS/JSX (no TypeScript). CSS Modules per component, no CSS framework. Vitest for unit tests. Firebase (Firestore only, client SDK) for Time Mode's shared leaderboard/username state — no other backend exists; the app is otherwise fully static (GitHub Pages).
 
 ## Layout
 
 ```
 public/words/            real word list JSON (3,000 entries each) + README on schema
-src/game/                 pure logic: evaluateGuess, keyboardStatus, hints, wordlist, gameReducer, constants
-src/storage/              storage abstraction (storage.js) + localStorage adapter + key scheme
-src/hooks/                useWordleGame (reducer + persistence orchestration), useKeyboardInput
-src/components/           DifficultySelector, Game, Board, Tile, Keyboard (+Key), HintPanel, FinishScreen
+firestore.rules           Firestore Security Rules (source of truth; pasted into the Firebase console manually)
+src/game/                 pure logic: evaluateGuess, keyboardStatus, hints, wordlist, gameReducer, constants,
+                          singaporeDate (SGT day boundary), dailyWord (deterministic word-of-the-day), username
+src/storage/              storage abstraction (storage.js, includes username caching) + timeAttemptStorage
+                          (Time Mode in-progress attempts) + localStorage adapter + key scheme
+src/firebase/             Firestore client (config.js + client.js) and leaderboard.js data-access layer
+src/hooks/                useWordleGame (Normal mode), useTimeModeGame (Time Mode, same reducer, own
+                          persistence/timer/submission), useKeyboardInput
+src/components/           DifficultySelector, ModeToggle, Game, Board, Tile, Keyboard (+Key), HintPanel,
+                          FinishScreen, TimeMode, TimeModeGame, UsernameEntry, Leaderboard, Timer
 ```
 
 ## Commands
@@ -36,7 +43,7 @@ src/components/           DifficultySelector, Game, Board, Tile, Keyboard (+Key)
 
 ## Deployment
 
-`.github/workflows/deploy.yml` builds and publishes the app to GitHub Pages on every push to `main` (requires Pages enabled once via Settings > Pages > Source: GitHub Actions). `vite.config.js` sets `base: '/wordle/'` to match the Pages URL path (`https://roytjy.github.io/wordle/`) — keep this in sync if the repo is ever renamed.
+`.github/workflows/deploy.yml` builds and publishes the app to GitHub Pages on every push to `main` (requires Pages enabled once via Settings > Pages > Source: GitHub Actions). `vite.config.js` sets `base: '/wordle/'` to match the Pages URL path (`https://roytjy.github.io/wordle/`) — keep this in sync if the repo is ever renamed. Time Mode's Firebase config (`src/firebase/config.js`) is committed directly (not a secret — see the file's own comment) and needs no GitHub Actions secret or workflow change.
 
 ## Workflow
 

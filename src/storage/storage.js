@@ -1,4 +1,4 @@
-import { keyFor, META_KEY } from './keys.js';
+import { keyFor, META_KEY, USERNAME_KEY, MODE_KEY } from './keys.js';
 import { localStorageAdapter } from './localStorageAdapter.js';
 import { resetProgress } from '../game/gameReducer.js';
 
@@ -29,6 +29,10 @@ function isValidSave(parsed, difficulty) {
  * @property {(difficulty: number) => Promise<void>} saveLastDifficulty
  * @property {(difficulty: number) => Promise<'not-started'|'in-progress'|'completed'>} getSaveStatus
  * @property {(difficulty: number) => Promise<void>} resetSave
+ * @property {() => Promise<string|null>} loadUsername
+ * @property {(name: string) => Promise<void>} saveUsername
+ * @property {() => Promise<'normal'|'time'|null>} loadLastMode
+ * @property {(mode: 'normal'|'time') => Promise<void>} saveLastMode
  */
 
 /**
@@ -70,6 +74,19 @@ export function createGameStorage(adapter) {
       const saved = await this.load(difficulty);
       if (!saved) return;
       await this.save(difficulty, resetProgress(saved));
+    },
+    async loadUsername() {
+      return adapter.getItem(USERNAME_KEY);
+    },
+    async saveUsername(name) {
+      adapter.setItem(USERNAME_KEY, name);
+    },
+    async loadLastMode() {
+      const raw = adapter.getItem(MODE_KEY);
+      return raw === 'normal' || raw === 'time' ? raw : null;
+    },
+    async saveLastMode(mode) {
+      adapter.setItem(MODE_KEY, mode);
     },
   };
 }
