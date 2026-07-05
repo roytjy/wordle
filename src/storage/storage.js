@@ -1,5 +1,6 @@
 import { keyFor, META_KEY } from './keys.js';
 import { localStorageAdapter } from './localStorageAdapter.js';
+import { resetProgress } from '../game/gameReducer.js';
 
 const REQUIRED_FIELDS = [
   'status',
@@ -26,6 +27,8 @@ function isValidSave(parsed, difficulty) {
  * @property {(difficulty: number) => Promise<void>} clear
  * @property {() => Promise<number|null>} loadLastDifficulty
  * @property {(difficulty: number) => Promise<void>} saveLastDifficulty
+ * @property {(difficulty: number) => Promise<'not-started'|'in-progress'|'completed'>} getSaveStatus
+ * @property {(difficulty: number) => Promise<void>} resetSave
  */
 
 /**
@@ -57,6 +60,16 @@ export function createGameStorage(adapter) {
     },
     async saveLastDifficulty(difficulty) {
       adapter.setItem(META_KEY, String(difficulty));
+    },
+    async getSaveStatus(difficulty) {
+      const saved = await this.load(difficulty);
+      if (!saved) return 'not-started';
+      return saved.status === 'playing' ? 'in-progress' : 'completed';
+    },
+    async resetSave(difficulty) {
+      const saved = await this.load(difficulty);
+      if (!saved) return;
+      await this.save(difficulty, resetProgress(saved));
     },
   };
 }

@@ -16,3 +16,13 @@
   color: var(--color-error);
   max-width: 30rem;
 }
+
+.restartButton {
+  padding: 0.3rem 0.75rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--color-border-strong);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+}

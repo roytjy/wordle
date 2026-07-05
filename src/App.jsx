@@ -20,7 +20,7 @@ export default function App() {
         <h1 className={styles.title}>Wordle</h1>
         <DifficultySelector value={difficulty} onChange={setDifficulty} />
       </header>
-      <Game key={difficulty} difficulty={difficulty} />
+      <Game key={difficulty} difficulty={difficulty} onSwitchDifficulty={setDifficulty} />
     </div>
   );
 }

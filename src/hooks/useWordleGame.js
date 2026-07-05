@@ -88,6 +88,11 @@ export function useWordleGame(difficulty) {
     dispatch({ type: 'NEW_GAME', answer, definition });
   }, []);
 
+  const resetSameWord = useCallback(() => {
+    setAnimatedRow(-1);
+    dispatch({ type: 'RESET_SAME_WORD' });
+  }, []);
+
   return {
     state,
     shakeKey,
@@ -98,5 +103,6 @@ export function useWordleGame(difficulty) {
     useLetterHint,
     useWordMeaningHint,
     startNewGame,
+    resetSameWord,
   };
 }

@@ -25,7 +25,7 @@ public/words/            real word list JSON (3,000 entries each) + README on sc
 src/game/                 pure logic: evaluateGuess, keyboardStatus, hints, wordlist, gameReducer, constants
 src/storage/              storage abstraction (storage.js) + localStorage adapter + key scheme
 src/hooks/                useWordleGame (reducer + persistence orchestration), useKeyboardInput
-src/components/           DifficultySelector, Game, Board, Tile, Keyboard (+Key), HintPanel, StatusBanner
+src/components/           DifficultySelector, Game, Board, Tile, Keyboard (+Key), HintPanel, FinishScreen
 ```
 
 ## Commands

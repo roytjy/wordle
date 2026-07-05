@@ -19,10 +19,27 @@ export function createInitialState(difficulty) {
   };
 }
 
+export function resetProgress(state) {
+  return {
+    ...state,
+    guesses: [],
+    results: [],
+    currentGuess: '',
+    keyboardStatuses: {},
+    hintsUsed: { letterReveal: 0, wordMeaning: 0 },
+    hintedLetters: [],
+    definitionRevealed: false,
+    status: 'playing',
+  };
+}
+
 export function gameReducer(state, action) {
   switch (action.type) {
     case 'ERROR':
       return { ...state, status: 'error', errorMessage: action.message };
+
+    case 'RESET_SAME_WORD':
+      return resetProgress(state);
 
     case 'RESTORE':
       return { ...action.state };
